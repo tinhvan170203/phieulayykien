@@ -31,7 +31,7 @@ const fs = require("fs");
     
     app.use(cors({
         // origin: "*",
-        origin: ["http://localhost:5173", "http://localhost:3000", "https://phieulayykien.cahy.vercel.app"],
+        origin: ["http://localhost:5173", "http://localhost:400", "https://phieulayykien.cahy.vercel.app"],
         credentials: true,
     }));
     // app.use(express.json());
