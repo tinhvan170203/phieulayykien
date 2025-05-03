@@ -1,0 +1,57 @@
+const express = require('express');
+const path = require('path')
+const multer = require('multer')
+
+var storage = multer.diskStorage({
+    destination: function(req, file, cb) {
+        let id_user = req.userId.userId
+        cb(null, path.join(__dirname,`../upload`))
+    },
+    filename: function(req, file, cb) {
+        const originalName = file.originalname; // tên file gốc
+        const encodedName = Buffer.from(originalName, 'latin1').toString('utf8'); // mã hóa tên file
+        // cb(null, encodedName); // dùng tên file đã mã hóa
+        cb(null, + new Date() + '_' + encodedName)
+    }
+})
+var upload = multer({
+    storage: storage,
+});
+
+const router = express.Router();
+const checkRole = require('../middlewares/checkRole.cjs');
+const middlewareController = require('../middlewares/verifyToken.cjs');
+const updatecaicach = require('../controllers/updatecaicach.cjs');
+
+router.get('/fetch',middlewareController.verifyToken, updatecaicach.getPhieuchams);
+router.post('/add',middlewareController.verifyToken, updatecaicach.savePhieudiemConfig);
+router.post('/copy',middlewareController.verifyToken, updatecaicach.copyPhieuchamConfig);
+router.post('/update',middlewareController.verifyToken, updatecaicach.updatePhieuchamConfig);
+router.get('/cuoc-cham-diem/fetch',middlewareController.verifyToken, updatecaicach.getListCuocchamdiem);
+router.post('/cuoc-cham-diem/add',middlewareController.verifyToken, updatecaicach.createdCuocchamdiem);
+router.delete('/cuoc-cham-diem/delete/:id',middlewareController.verifyToken, updatecaicach.deleteCuocChamDiem);
+
+router.put('/cuoc-cham-diem/edit/:id',middlewareController.verifyToken, updatecaicach.updateCuocChamDiem);
+router.get('/change-block-tu-cham',middlewareController.verifyToken, updatecaicach.changeStatusChotdiemTucham);
+router.get('/change-block-giai-trinh',middlewareController.verifyToken, updatecaicach.changeStatusChotdiemGiaitrinh);
+router.get('/theo-doi-qua-trinh-cham-diem',middlewareController.verifyToken, updatecaicach.theodoiQuatrinhCham);
+router.get('/xoa-phieu-cham-diem/:id',middlewareController.verifyToken, updatecaicach.removePhieucham);
+
+router.get('/check-phieu-cham-used',middlewareController.verifyToken, updatecaicach.checkPhieuchamUsed);
+
+router.get('/thong-bao', updatecaicach.fetchThongbao);
+router.post('/save-thong-bao',middlewareController.verifyToken, updatecaicach.saveThongbao);
+router.post('/save-file',middlewareController.verifyToken, upload.single('file'), updatecaicach.saveFile);
+router.post('/save-ghi-chu',middlewareController.verifyToken, updatecaicach.updateGhichuFile);
+router.get('/thong-bao/delete/:id',middlewareController.verifyToken, updatecaicach.deleteFile);
+router.get('/download-file/login/:file', updatecaicach.downloadFileLoginPage);
+
+
+router.post('/check-import', middlewareController.verifyToken, updatecaicach.checkImportUser);
+router.get('/cuoc-cham-diem-active', middlewareController.verifyToken, updatecaicach.getListPhieuYkienActive);
+router.get('/fetch/phieu-lay-y-kien', middlewareController.verifyToken, updatecaicach.fetchThamgiaYkien);
+router.post('/y-kien-danh-gia-save',middlewareController.verifyToken,   updatecaicach.saveYkienDanhgia);
+router.get('/fetch/tong-hop-phieu-lay-y-kien', middlewareController.verifyToken, updatecaicach.tonghopPhieudanhgia);
+
+
+module.exports = router
