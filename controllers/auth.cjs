@@ -60,7 +60,7 @@ module.exports = {
       }
     } catch (error) {
       console.log(error.message)
-      res.status(401).json({ status: "failed", message: "Lỗi đăng nhập hệ thống" });
+      res.status(401).json({ status: "failed", message: "Lỗi đăng nhập hệ thống" + error.message})
     }
   },
   logout: async (req, res) => {
