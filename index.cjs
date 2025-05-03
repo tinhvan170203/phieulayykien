@@ -10,17 +10,6 @@ const numCPUs = require('os').cpus().length;
 // console.log(numCPUs)
 const docx = require('docx');
 const fs = require("fs");
-// if (cluster.isMaster) {
-//     // Tạo worker cho từng CPU
-//     for (let i = 0; i < numCPUs; i++) {
-//       cluster.fork();
-//     }
-  
-//     cluster.on('exit', (worker, code, signal) => {
-//       console.log(`Worker ${worker.process.pid} đã chết, khởi động lại...`);
-//       cluster.fork();
-//     });
-//   } else {
     const app = express();
     app.use(cookies());
     app.use(function (req, res, next) {
@@ -74,14 +63,10 @@ const fs = require("fs");
     mongoose.connect("mongodb+srv://vuvantinh121123:cKo6IkBIbE895guO@cluster0.sqjsyhf.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0", {
         useNewUrlParser: true,
         useUnifiedTopology: true
-    // mongoose.connect("mongodb+srv://vuvantinh121123:x9MkCzJpjVGyTETs@cluster0.ioxu5.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0", {
-    //     useNewUrlParser: true,
-    //     useUnifiedTopology: true
     }, (err) => {
         if (err) {
             console.log(err)
         }
         console.log('kết nối db thành công')
     })
-  // }
 
