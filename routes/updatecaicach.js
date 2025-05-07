@@ -19,9 +19,9 @@ var upload = multer({
 });
 
 const router = express.Router();
-const checkRole = require('../middlewares/checkRole.cjs');
-const middlewareController = require('../middlewares/verifyToken.cjs');
-const updatecaicach = require('../controllers/updatecaicach.cjs');
+const checkRole = require('../middlewares/checkRole');
+const middlewareController = require('../middlewares/verifyToken');
+const updatecaicach = require('../controllers/updatecaicach');
 
 router.get('/fetch',middlewareController.verifyToken, updatecaicach.getPhieuchams);
 router.post('/add',middlewareController.verifyToken, updatecaicach.savePhieudiemConfig);
@@ -52,6 +52,7 @@ router.get('/cuoc-cham-diem-active', middlewareController.verifyToken, updatecai
 router.get('/fetch/phieu-lay-y-kien', middlewareController.verifyToken, updatecaicach.fetchThamgiaYkien);
 router.post('/y-kien-danh-gia-save',middlewareController.verifyToken,   updatecaicach.saveYkienDanhgia);
 router.get('/fetch/tong-hop-phieu-lay-y-kien', middlewareController.verifyToken, updatecaicach.tonghopPhieudanhgia);
+router.get('/fetch/tong-hop-phieu-lay-y-kien-toan-quoc', middlewareController.verifyToken, updatecaicach.tonghopPhieudanhgiaToanquoc);
 
 
 module.exports = router

@@ -1,13 +1,13 @@
 
-const Phieuchamdiems = require("../models/Phieuchamdiem.cjs");
+const Phieuchamdiems = require("../models/Phieuchamdiem");
 // const Phieukhaosat = require("../models/Phieukhaosat");
-const QuantriNamChamdiem = require("../models/QuanlyNamChamdiem.cjs");
-const Users = require("../models/Users.cjs");
+const QuantriNamChamdiem = require("../models/QuanlyNamChamdiem");
+const Users = require("../models/Users");
 const path = require('path');
 const fs = require('fs');
-const Thongbao = require("../models/Thongbao.cjs");
-const HistoriesSystem = require("../models/HistoriesSystem.cjs");
-const Phieukhaosat = require("../models/Phieukhaosat.cjs");
+const Thongbao = require("../models/Thongbao");
+const HistoriesSystem = require("../models/HistoriesSystem");
+const Phieukhaosat = require("../models/Phieukhaosat");
 
 const saveAction = async (user_id, action) => {
     let newAction = new HistoriesSystem({
@@ -21,9 +21,8 @@ const saveAction = async (user_id, action) => {
 module.exports = {
     getPhieuchams: async (req, res) => {
         let { id_user } = req.query;
-
         try {
-            let items = await Phieukhaosat.find({ user_created: id_user }).sort({ createdAt: -1 });
+            let items = await Phieukhaosat.find().sort({ createdAt: -1 });
             res.status(200).json(items);
         } catch (error) {
             console.log("lỗi: ", error.message);
@@ -61,7 +60,7 @@ module.exports = {
             let copy = new Phieukhaosat(data);
             await copy.save();
             await saveAction(req.userId.userId, `Nhân bản phiếu lấy ý kiến ${item.name}`)
-            let items = await Phieukhaosat.find({ user_created: item.user_created }).sort({ createdAt: -1 });
+            let items = await Phieukhaosat.find().sort({ createdAt: -1 });
             res.status(200).json({ items, message: "Nhân bản phiếu lấy ý kiến thành công" });
         } catch (error) {
             console.log("lỗi: ", error.message);
@@ -79,7 +78,7 @@ module.exports = {
         try {
             await Phieukhaosat.findByIdAndUpdate(id, req.body.data);
             // console.log(id_user)
-            let items = await Phieukhaosat.find({ user_created: id_user }).sort({ createdAt: -1 });
+            let items = await Phieukhaosat.find().sort({ createdAt: -1 });
             // console.log(items)
             await saveAction(req.userId.userId, `Cấu hình phiếu lấy ý kiến ${req.body.data.name}`)
             res.status(200).json({ items, message: "Update phiếu lấy ý kiến thành công" });
@@ -111,7 +110,7 @@ module.exports = {
 
             let item = new QuantriNamChamdiem(data)
             await item.save();
-            let items = await QuantriNamChamdiem.find({ user_created: req.body.user_created }).populate('setting.phieukhaosat', { name: 1 }).populate("setting.khoi").sort({ nam: -1 })
+            let items = await QuantriNamChamdiem.find().populate('setting.phieukhaosat', { name: 1 }).populate("setting.khoi").sort({ nam: -1 })
             await saveAction(req.userId.userId, `Tạo cuộc lấy ý kiến năm ${req.body.nam}`)
             res.status(200).json({ items, message: "Tạo cuộc lấy ý kiến thành công" })
         } catch (error) {
@@ -126,7 +125,7 @@ module.exports = {
     getListCuocchamdiem: async (req, res) => {
         let { id_user } = req.query;
         try {
-            let items = await QuantriNamChamdiem.find({ user_created: id_user }).populate('setting.phieukhaosat', { name: 1 }).populate("setting.khoi").sort({ nam: -1 })
+            let items = await QuantriNamChamdiem.find().populate('setting.phieukhaosat', { name: 1 }).populate("setting.khoi").sort({ nam: -1 })
             res.status(200).json(items)
         } catch (error) {
             console.log("lỗi: ", error.message);
@@ -153,7 +152,7 @@ module.exports = {
 
             await QuantriNamChamdiem.findByIdAndDelete(id);
             await saveAction(req.userId.userId, `Xóa cuộc lấy ý kiến năm ${item.nam}`)
-            let items = await QuantriNamChamdiem.find({ user_created: id_user }).populate('setting.phieukhaosat', { name: 1 }).populate("setting.khoi").sort({ nam: -1 })
+            let items = await QuantriNamChamdiem.find().populate('setting.phieukhaosat', { name: 1 }).populate("setting.khoi").sort({ nam: -1 })
             res.status(200).json({ items, message: "Xóa cuộc lấy ý kiến thành công" })
         } catch (error) {
             console.log("lỗi: ", error.message);
@@ -170,7 +169,7 @@ module.exports = {
         try {
             let item = await QuantriNamChamdiem.findByIdAndUpdate(id, req.body);
 
-            let items = await QuantriNamChamdiem.find({ user_created: item.user_created }).populate('setting.phieukhaosat', { name: 1 }).populate("setting.khoi").sort({ nam: -1 })
+            let items = await QuantriNamChamdiem.find().populate('setting.phieukhaosat', { name: 1 }).populate("setting.khoi").sort({ nam: -1 })
             await saveAction(req.userId.userId, `Update cuộc lấy ý kiến năm ${req.body.nam}`)
             res.status(200).json({ items, message: "Update cuộc lấy ý kiến thành công" })
         } catch (error) {
@@ -220,12 +219,12 @@ module.exports = {
     theodoiQuatrinhCham: async (req, res) => {
         let { id_user, year } = req.query;
 
-        let cuocChamDiem = await QuantriNamChamdiem.findOne({ user_created: id_user, nam: year });
+        let cuocChamDiem = await QuantriNamChamdiem.findOne({nam: year });
         if (cuocChamDiem === null) {
             return res.status(401).json({ status: "failed", message: "Chưa có cuộc lấy ý kiến năm " + year });
         }
         try {
-            let items = await Users.find({ capcha: id_user, _id: { $ne: id_user } }, { _id: 1, tenhienthi: 1, time_block: 1, status: 1, nhom: 1, taikhoancap: 1 }).sort({ thutu: 1 });
+            let items = await Users.find({ capcha: id_user, captaikhoan: "Cơ quan, đầu mối lấy ý kiến", _id: { $ne: id_user } }, { _id: 1, tenhienthi: 1, time_block: 1, status: 1, nhom: 1, taikhoancap: 1 }).sort({ thutu: 1 });
             // console.log(items)
             // tìm ra các user yêu cầu lấy ý kiến năm đó
             items = items.filter(e => {
@@ -916,21 +915,23 @@ module.exports = {
 
     fetchThamgiaYkien: async (req, res) => {
         try {
+            console.log(req.query)
             let { id_user, nam } = req.query;
 
             let user = await Users.findById(id_user);
-            let id_capcha = user.capcha;
+            // let id_capcha = user.capcha;
 
             let checked_namchamdiem = await QuantriNamChamdiem.findOne({
                 nam: nam,
-                user_created: id_capcha
+                // user_created: id_capcha
             });
 
             if (!checked_namchamdiem) {
                 return res.status(401).json({ message: "Thông báo: Đơn vị không có cuộc lấy ý kiến đánh giá năm " + nam + ". Vui lòng liên hệ với cơ quan lấy ý kiến đánh giá" })
             } else {
                 let item = await Phieuchamdiems.findOne({ nam, taikhoan: id_user }).populate('phieukhaosat');
-
+// console.log(nam)
+// console.log(item)
                 if (!item) { //TH chưa tạo phiếu chấm điểm
                     // console.log('no item')
                     let setting = checked_namchamdiem.setting;
@@ -941,7 +942,7 @@ module.exports = {
                     let id_phieucham = setting[index].phieukhaosat;
                     let khoichucnang = setting[index].khoi;
                     let phieucham = await Phieukhaosat.findById(id_phieucham);
-                    console.log(phieucham)
+                    // console.log(phieucham)
                     let phieuchamdiem_detail = [...phieucham.phieukhaosat];
 
                     let dulieu = {
@@ -979,11 +980,12 @@ module.exports = {
     },
 
     saveYkienDanhgia: async (req, res) => {
-        let { list, id_phieukhaosat } = req.body;
+        let { list, id_phieukhaosat, ghichu } = req.body;
         // console.log(req.body)
         try {
             let item = await Phieuchamdiems.findByIdAndUpdate(id_phieukhaosat, {
                 phieukhaosat_detail: list,
+                ghichu
             });
             await saveAction(req.userId.userId, `Lưu đánh giá ý kiến năm ${item.year}`)
             res.status(200).json({ message: "Lưu ý kiến đánh giá thành công" })
@@ -1000,12 +1002,103 @@ module.exports = {
         try {
             let { id_user, year } = req.query;
 
-            let cuocChamDiem = await QuantriNamChamdiem.findOne({ user_created: id_user, nam: year }).populate('setting.khoi setting.phieukhaosat');
+            let cuocChamDiem = await QuantriNamChamdiem.findOne({ nam: year }).populate('setting.khoi setting.phieukhaosat');
             if (cuocChamDiem === null) {
                 return res.status(401).json({ status: "failed", message: "Chưa có cuộc lấy ý kiến khảo sát năm " + year });
             };
-            let items = await Users.find({ capcha: id_user, _id: { $ne: id_user } }, { _id: 1, tenhienthi: 1, time_block: 1, status: 1, khoi: 1 }).sort({ thutu: 1 });
-            console.log(items)
+            let items = await Users.find({ capcha: id_user, captaikhoan: "Cơ quan, đầu mối lấy ý kiến", _id: { $ne: id_user } }, { _id: 1, tenhienthi: 1, time_block: 1, status: 1, khoi: 1 }).sort({ thutu: 1 });
+            // console.log(items)
+
+            items = items.filter(e => {
+                let date_start_chamdiem = (new Date(cuocChamDiem.thoigianbatdautucham)).getTime();
+                let date_block_user = e.status === true ? (new Date(e.time_block)).getTime() : (new Date()).getTime()
+                let check = (e.status === false && date_start_chamdiem > date_block_user)
+                return e.status === true || check
+            });
+
+
+            // dữ liệu tổng số phiếu phát ra, thu vào
+            let data_total_phieuykien = [];
+            let data_ghichu = [];
+
+            // phân tích các tiêu chí cụ thể
+            let data = []; // data dữ liệu sau khi xử lý
+            let setting_of_nam = cuocChamDiem.setting;
+            setting_of_nam = setting_of_nam.sort((a,b)=> a.khoi.thutu - b.khoi.thutu)
+            for(setting of setting_of_nam){
+                let khoi = setting.khoi;
+                let phieukhaosat = setting.phieukhaosat;
+
+                let donvis_of_khoi = items.filter(i=>i.khoi.toString() === khoi._id.toString());
+
+                // tổng số phiếu phát ra sẽ bằng số đơn vị của khối
+                // số phiếu thu vào sẽ là số phiếu chấm tạo ra trong hệ thống
+                // mẫu phiếu khảo sát chung để tập hợp theo các tiêu chí cụ thể
+                let phieukhaosat_detail_common = phieukhaosat.phieukhaosat.sort((a,b)=>a.thutu - b.thutu);
+
+               // tổng số phiếu thu vào
+                let phieukhaosats_detail_recieve = await Phieuchamdiems.find({year, khoichucnang: khoi._id, taikhoan: {$in: items.map(i=>i._id)} ,phieukhaosat: phieukhaosat._id}).populate('taikhoan');
+                // console.log(phieukhaosats_detail_recieve)
+                for(let y of phieukhaosats_detail_recieve){
+                    // console.log(y)
+                    if(y.ghichu && y.ghichu !== ""){
+                        data_ghichu.push({
+                            name: y.taikhoan.tenhienthi,
+                            ghichu: y.ghichu
+                        })
+                    }
+                };
+
+                let data_cauhoi = [];
+                for(let cauhoi of phieukhaosat_detail_common){
+                  let options_of_cauhoi = cauhoi.options.map(i => ({...i._doc, total: 0, donvis: []}))
+             
+                    for(let phieukhaosat_detail_recieve of phieukhaosats_detail_recieve){
+                        let cauhoi_of_recieve = phieukhaosat_detail_recieve.phieukhaosat_detail.find(e=>e._id.toString() === cauhoi._id.toString());
+                        let options_of_question_donvi = cauhoi_of_recieve.options;
+
+                        // tìm ra option có choice true
+                        let option_choice_true = options_of_question_donvi.find(e=>e.choice === true);
+
+                        let index = options_of_cauhoi.findIndex(i=>i._id.toString() === option_choice_true._id.toString());
+                        options_of_cauhoi[index].total +=1;
+                        options_of_cauhoi[index].donvis.push(phieukhaosat_detail_recieve.taikhoan.tenhienthi);
+                    };
+                    // console.log(options_of_cauhoi)
+                    data_cauhoi.push({
+                        cauhoi: cauhoi.cauhoi,
+                        total_send: donvis_of_khoi.length,
+                        total_recieve: phieukhaosats_detail_recieve.length,
+                        options_result: options_of_cauhoi
+                    })
+                };
+
+                data.push({
+                    khoi: khoi.tenkhoi,
+                    data_cauhoi
+                })
+            };
+
+            res.status(200).json({data_tieuchicuthe: data, data_ghichu, data_total_phieuykien})
+        } catch (error) {
+            console.log("lỗi: ", error.message);
+            res.status(401).json({
+                status: "failed",
+                message: error.message,
+            });
+        }
+    },
+
+    tonghopPhieudanhgiaToanquoc: async (req, res) => {
+        try {
+            let { year, listKhoi } = req.query;
+
+            let cuocChamDiem = await QuantriNamChamdiem.findOne({ nam: year }).populate('setting.khoi setting.phieukhaosat');
+            if (cuocChamDiem === null) {
+                return res.status(401).json({ status: "failed", message: "Chưa có cuộc lấy ý kiến khảo sát năm " + year });
+            };
+            let items = await Users.find({ captaikhoan: "Cơ quan, đầu mối lấy ý kiến" }, { _id: 1, tenhienthi: 1, time_block: 1, status: 1, khoi: 1 }).sort({ thutu: 1 });
+            // console.log(items)
 
             items = items.filter(e => {
                 let date_start_chamdiem = (new Date(cuocChamDiem.thoigianbatdautucham)).getTime();
@@ -1021,9 +1114,19 @@ module.exports = {
             // phân tích các tiêu chí cụ thể
             let data = []; // data dữ liệu sau khi xử lý
             let setting_of_nam = cuocChamDiem.setting;
+            setting_of_nam = setting_of_nam.sort((a,b)=> a.khoi.thutu - b.khoi.thutu)
             for(setting of setting_of_nam){
                 let khoi = setting.khoi; 
          
+                //check khối xem phải các khối muốn lấy hay không
+
+                let index_khoi = listKhoi.findIndex(i=>i === khoi._id.toString());
+
+                if(index_khoi === -1){
+                    continue
+                };
+
+
                 let phieukhaosat = setting.phieukhaosat;
 
                 let donvis_of_khoi = items.filter(i=>i.khoi.toString() === khoi._id.toString());
@@ -1034,7 +1137,7 @@ module.exports = {
                 let phieukhaosat_detail_common = phieukhaosat.phieukhaosat.sort((a,b)=>a.thutu - b.thutu);
 
                // tổng số phiếu thu vào
-                let phieukhaosats_detail_recieve = await Phieuchamdiems.find({year, khoichucnang: khoi._id, phieukhaosat: phieukhaosat._id}).populate('taikhoan');
+                let phieukhaosats_detail_recieve = await Phieuchamdiems.find({year, taikhoan: {$in: items.map(i=>i._id)}, khoichucnang: khoi._id, phieukhaosat: phieukhaosat._id}).populate('taikhoan');
                 // console.log(phieukhaosats_detail_recieve)
                 let data_cauhoi = [];
                 for(let cauhoi of phieukhaosat_detail_common){

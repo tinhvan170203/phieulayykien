@@ -1,13 +1,13 @@
 const jwt = require("jsonwebtoken");
-const RefreshTokens = require("../models/RefreshToken.cjs");
+const RefreshTokens = require("../models/RefreshToken");
 const fs = require('fs');
 const path = require('path');
-const Users = require("../models/Users.cjs");
+const Users = require("../models/Users");
 const _ = require('lodash');
-const Phieuchamdiems = require("../models/Phieuchamdiem.cjs");
-const HistoriesSystem = require("../models/HistoriesSystem.cjs");
-const QuantriNamChamdiem = require("../models/QuanlyNamChamdiem.cjs");
-const Khois = require("../models/Khois.cjs");
+const Phieuchamdiems = require("../models/Phieuchamdiem");
+const HistoriesSystem = require("../models/HistoriesSystem");
+const QuantriNamChamdiem = require("../models/QuanlyNamChamdiem");
+const Khois = require("../models/Khois");
 const saveAction = async (user_id, action) => {
   let newAction = new HistoriesSystem({
     user: user_id,
@@ -19,7 +19,6 @@ const saveAction = async (user_id, action) => {
 
 module.exports = {
   login: async (req, res) => {
-   
     try {
       let user = await Users.findOne({
         tentaikhoan: req.body.tentaikhoan,
@@ -60,7 +59,7 @@ module.exports = {
       }
     } catch (error) {
       console.log(error.message)
-      res.status(401).json({ status: "failed", message: "Lỗi đăng nhập hệ thống" + error.message})
+      res.status(401).json({ status: "failed", message: "Lỗi đăng nhập hệ thống" });
     }
   },
   logout: async (req, res) => {
@@ -85,7 +84,7 @@ module.exports = {
       let users = await Users.find({
         capcha: req.query.id_user
         // "captaikhoan": {$in:["Cấp Bộ","Cấp Cục","Cấp Tỉnh"]}
-      }).populate('khoi')
+      }).populate('khoi').sort({thutu: 1})
 
       res.status(200).json(users)
     } catch (error) {
@@ -103,6 +102,7 @@ module.exports = {
         captaikhoan,
         matkhau: '123456',
         block_by_admin: false,
+        time_block: new Date(),
         thutu,
         role,
         capcha: id_user,
@@ -125,7 +125,8 @@ module.exports = {
       //lọc ra các 
       let users = await Users.find({
         capcha: id_user
-      }).populate("khoi")
+      }).populate("khoi").sort({thutu: 1})
+     
       res.status(200).json({ status: "success", users, message: "Thêm mới thành công" })
     } catch (error) {
       console.log("lỗi: ", error.message);
@@ -133,10 +134,13 @@ module.exports = {
     }
   },
   editUser: async (req, res) => {
+    // console.log('123')
     let id = req.params.id;
-    let { tentaikhoan, tenhienthi,captaikhoan, khoi, role, status, thutu } = req.body;
+    // console.log(id)
+    let { tentaikhoan, tenhienthi,captaikhoan, captaikhoan_user, khoi, role, status, thutu } = req.body;
+   
     try {
-      await Users.findByIdAndUpdate(id, {
+      let item = await Users.findByIdAndUpdate(id, {
         tentaikhoan,
         thutu,
         captaikhoan,
@@ -145,9 +149,19 @@ module.exports = {
         role,
         tenhienthi,
       });
-      let users = await Users.find({
-        capcha: id
-      }).populate('khoi')
+
+      let users;
+      if(captaikhoan_user === "Quản trị V03"){
+        users = await Users.find({
+          captaikhoan: {$in: ["Quản trị V03", "Quản trị Công an tỉnh"]}
+        }).populate('khoi').sort({thutu: 1})
+      }else{
+        console.log(item)
+        users = await Users.find({
+          capcha: item.capcha
+        }).populate('khoi').sort({thutu: 1})
+      }
+      // console.log(users)
       await saveAction(req.userId.userId, `Chỉnh sửa tài khoản ${tenhienthi}`)
       res.status(200).json({ status: "success", users, message: "Cập nhật tài khoản người dùng thành công" })
     } catch (error) {
@@ -157,6 +171,8 @@ module.exports = {
   },
   deleteUser: async (req, res) => {
     let id = req.params.id;
+    let captaikhoan_user = req.query;
+    console.log(captaikhoan_user)
     // console.log(id)
     try {
       let item = await Users.findById(id);
@@ -170,7 +186,7 @@ module.exports = {
       let user_list_con = await Users.find({capcha: id});
       for(let i of user_list_con){
         try {
-          fs.unlinkSync(path.join(__dirname, "../upload/" + i._id))
+          fs.rmSync(path.join(__dirname, "../upload/" + id), { recursive: true, force: true })
           console.log('Folder removed successfully (sync)!');
         } catch (err) {
           console.error('Error removing folder (sync):', err);
@@ -181,17 +197,26 @@ module.exports = {
       }
       // await Users.deleteMany({capcha: id});
       try {
-        fs.unlinkSync(path.join(__dirname, "../upload/" + id))
+        fs.rmSync(path.join(__dirname, "../upload/" + id), { recursive: true, force: true })
         console.log('Folder removed successfully (sync)!');
       } catch (err) {
-        console.error('Error removing folder (sync):', err);
+        console.error('Error removing folder (sync) lỗi:', err);
       }
       // check xem có phiếu điểm của tài khoản đang muốn xóa hay không, nếu có thì đưa ra thông báo k được xóa,
       // mà chỉ thay đổi được trạng thái sử dụng thôi
+      let users;
+      if(captaikhoan_user === "Quản trị V03"){
+        users = await Users.find({
+          captaikhoan: {$in: ["Quản trị V03", "Quản trị Công an tỉnh"]}
+        }).populate('khoi').sort({thutu: 1})
+        // console.log(users)
+      }else{
+        // console.log(item._id)
+        users = await Users.find({
+          capcha: item.capcha
+        }).populate('khoi').sort({thutu: 1})
+      }
       await saveAction(req.userId.userId, `Xóa tài khoản ${item.tentaikhoan}`)
-      let users = await Users.find({
-        capcha: item._id
-      }).populate('khoi')
       res.status(200).json({ status: "success", users, message: "Xóa tài khoản người dùng thành công" })
     } catch (error) {
       console.log("lỗi: ", error.message);
@@ -221,7 +246,19 @@ module.exports = {
       });
     }
   },
-  //Hàm tạo tài khoản cấp phòng, xã của các tài khoản cấp tỉnh
+  getUserCapTinh: async (req, res) => {
+    try {
+      let users = await Users.find({
+        "captaikhoan": {$in:["Quản trị Công an tỉnh"]},
+        // status: true
+      }).sort({thutu: 1});
+    // console.log(users)
+      res.status(200).json(users)
+    } catch (error) {
+      console.log("lỗi: ", error.message);
+      res.status(401).json({ status: "failed", message: "Có lỗi xảy ra khi lấy dữ liệu người dùng" });
+    }
+  },
   getUserListOfCapTinh: async (req, res) => {
     let id_user = req.query.id_user;
     try {
@@ -229,6 +266,7 @@ module.exports = {
         "captaikhoan": "Cơ quan, đầu mối lấy ý kiến",
         capcha: id_user
       })
+      console.log(users)
 
       res.status(200).json(users)
     } catch (error) {
@@ -324,12 +362,12 @@ module.exports = {
     let { id_user, year } = req.query;
 
     try {
-      let cuocChamDiem = await QuantriNamChamdiem.findOne({ user_created: id_user, nam: year });
+      let cuocChamDiem = await QuantriNamChamdiem.findOne({  nam: year });
       if (cuocChamDiem === null) {
         return res.status(401).json({ status: "failed", message: "Chưa có cuộc lấy ý kiến khảo sát năm " + year });
       };
       
-      let items = await Users.find({ capcha: id_user, _id: {$ne: id_user} }, { _id: 1, tenhienthi: 1, time_block: 1, status: 1 }).sort({ thutu: 1 });
+      let items = await Users.find({ capcha: id_user, captaikhoan: "Cơ quan, đầu mối lấy ý kiến", _id: {$ne: id_user} }, { _id: 1, tenhienthi: 1, time_block: 1, status: 1 }).sort({ thutu: 1 });
 
       items = items.filter(e => {
         let date_start_chamdiem = (new Date(cuocChamDiem.thoigianbatdautucham)).getTime();

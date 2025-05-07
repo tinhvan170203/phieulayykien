@@ -1,14 +1,14 @@
 
-const Phieuchamdiems = require("../models/Phieuchamdiem.cjs");
+const Phieuchamdiems = require("../models/Phieuchamdiem");
 
 const path = require('path');
 const docx = require("docx");
 const { Document, Packer, Paragraph, convertInchesToTwip, WidthType, TextRun, AlignmentType, PageSize, PageOrientation, Table, TableCell, TableRow, VerticalAlign, TextDirection, HeadingLevel } = docx;
 const fs = require("fs");
-const Users = require("../models/Users.cjs");
-const HistoriesSystem = require("../models/HistoriesSystem.cjs");
-const QuantriNamChamdiem = require("../models/QuanlyNamChamdiem.cjs");
-const PhieudiemNew = require("../models/PhieudiemNew.cjs");
+const Users = require("../models/Users");
+const HistoriesSystem = require("../models/HistoriesSystem");
+const QuantriNamChamdiem = require("../models/QuanlyNamChamdiem");
+const PhieudiemNew = require("../models/PhieudiemNew");
 
 /*Hàm tính khoảng cách giữa 2 ngày trong javascript*/
 const get_day_of_time = (d1, d2) => {
@@ -141,7 +141,7 @@ module.exports = {
     try {
       let item = await Phieuchamdiems.findOne({ year, taikhoan: taikhoan }).populate('phieukhaosat')
       if (!item) {
-        return res.status(400).json({ message: "Không có bảng điểm tự chấm của đơn vị trong hệ thống phần mềm." })
+        return res.status(400).json({ message: "Không có phiếu khảo sát, lấy ý kiến của đơn vị trong hệ thống phần mềm." })
       };
 
       let checked_namchamdiem = await QuantriNamChamdiem.findOne({
@@ -150,7 +150,7 @@ module.exports = {
       });
 
       if (!checked_namchamdiem) {
-        return res.status(401).json({ message: "Thông báo: Cơ quan cấp trên chưa tạo bảng chấm điểm năm " + year + ". Vui lòng liên hệ với cơ quan cấp trên" })
+        return res.status(401).json({ message: "Thông báo: Cơ quan cấp trên chưa tạo cuộc khảo sát ý kiến năm " + year + ". Vui lòng liên hệ với cơ quan cấp trên" })
       }
 
       res.status(200).json({

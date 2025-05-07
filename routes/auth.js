@@ -2,9 +2,9 @@ const express = require('express');
 
 const router = express.Router();
 
-const auth = require('../controllers/auth.cjs');
-const middlewareController = require('../middlewares/verifyToken.cjs');
-const checkRole = require('../middlewares/checkRole.cjs');
+const auth = require('../controllers/auth');
+const middlewareController = require('../middlewares/verifyToken');
+const checkRole = require('../middlewares/checkRole');
 // const middlewareController = require('../middlewares/verifyToken');
 
 router.post('/login', auth.login )
@@ -24,6 +24,7 @@ router.put('/user/edit/:id', middlewareController.verifyToken,  auth.editUser)
 router.get('/user/cap-tinh/fetch',middlewareController.verifyToken, auth.getUserListOfCapTinh)
 router.post('/user/cap-tinh/change-many-status', middlewareController.verifyToken, auth.changeStatusAccountsOfCapTinh)
 
+router.get('/user/list/cap-tinh/fetch',middlewareController.verifyToken, auth.getUserCapTinh)
 
 //lấy ra user cấp con của 1 user
 router.get('/user/children',middlewareController.verifyToken, auth.fetchChildrenUser)

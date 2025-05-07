@@ -1,9 +1,9 @@
 const express = require('express');
 const router = express.Router();
-const checkRole = require('../middlewares/checkRole.cjs');
-const middlewareController = require('../middlewares/verifyToken.cjs');
+const checkRole = require('../middlewares/checkRole');
+const middlewareController = require('../middlewares/verifyToken');
 
-const caicachhanhchinh = require('../controllers/caicachhanhchinh.cjs');
+const caicachhanhchinh = require('../controllers/caicachhanhchinh');
 const path = require('path')
 const multer = require('multer')
 

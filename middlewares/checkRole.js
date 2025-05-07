@@ -1,4 +1,4 @@
-const Users = require("../models/Users.cjs");
+const Users = require("../models/Users");
 const _ = require('lodash');
 
 let checkRole = (role) => {

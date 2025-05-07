@@ -4,6 +4,7 @@ const Schema = mongoose.Schema;
 
 const phieuchamdiemSchema = new Schema({
     year: Number,
+    ghichu: String,
     hoanthanhkhaosat: {
         status: Boolean,
         files:[String],
