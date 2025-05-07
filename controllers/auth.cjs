@@ -1,13 +1,13 @@
 const jwt = require("jsonwebtoken");
-const RefreshTokens = require("../models/RefreshToken");
+const RefreshTokens = require("../models/RefreshToken.cjs");
 const fs = require('fs');
 const path = require('path');
-const Users = require("../models/Users");
+const Users = require("../models/Users.cjs");
 const _ = require('lodash');
-const Phieuchamdiems = require("../models/Phieuchamdiem");
-const HistoriesSystem = require("../models/HistoriesSystem");
-const QuantriNamChamdiem = require("../models/QuanlyNamChamdiem");
-const Khois = require("../models/Khois");
+const Phieuchamdiems = require("../models/Phieuchamdiem.cjs");
+const HistoriesSystem = require("../models/HistoriesSystem.cjs");
+const QuantriNamChamdiem = require("../models/QuanlyNamChamdiem.cjs");
+const Khois = require("../models/Khois.cjs");
 const saveAction = async (user_id, action) => {
   let newAction = new HistoriesSystem({
     user: user_id,

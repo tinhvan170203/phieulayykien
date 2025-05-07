@@ -1,5 +1,5 @@
-const Khois = require("../models/Khois");
-const Users = require("../models/Users");
+const Khois = require("../models/Khois.cjs");
+const Users = require("../models/Users.cjs");
 module.exports = {
   getKhois: async (req, res) => {
     // console.log(req.query)

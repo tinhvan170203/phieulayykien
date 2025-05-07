@@ -1,14 +1,14 @@
 
-const Phieuchamdiems = require("../models/Phieuchamdiem");
+const Phieuchamdiems = require("../models/Phieuchamdiem.cjs");
 
 const path = require('path');
 const docx = require("docx");
 const { Document, Packer, Paragraph, convertInchesToTwip, WidthType, TextRun, AlignmentType, PageSize, PageOrientation, Table, TableCell, TableRow, VerticalAlign, TextDirection, HeadingLevel } = docx;
 const fs = require("fs");
-const Users = require("../models/Users");
-const HistoriesSystem = require("../models/HistoriesSystem");
-const QuantriNamChamdiem = require("../models/QuanlyNamChamdiem");
-const PhieudiemNew = require("../models/PhieudiemNew");
+const Users = require("../models/Users.cjs");
+const HistoriesSystem = require("../models/HistoriesSystem.cjs");
+const QuantriNamChamdiem = require("../models/QuanlyNamChamdiem.cjs");
+const PhieudiemNew = require("../models/PhieudiemNew.cjs");
 
 /*Hàm tính khoảng cách giữa 2 ngày trong javascript*/
 const get_day_of_time = (d1, d2) => {

@@ -1,13 +1,13 @@
 
-const Phieuchamdiems = require("../models/Phieuchamdiem");
+const Phieuchamdiems = require("../models/Phieuchamdiem.cjs");
 // const Phieukhaosat = require("../models/Phieukhaosat");
-const QuantriNamChamdiem = require("../models/QuanlyNamChamdiem");
-const Users = require("../models/Users");
+const QuantriNamChamdiem = require("../models/QuanlyNamChamdiem.cjs");
+const Users = require("../models/Users.cjs");
 const path = require('path');
 const fs = require('fs');
-const Thongbao = require("../models/Thongbao");
-const HistoriesSystem = require("../models/HistoriesSystem");
-const Phieukhaosat = require("../models/Phieukhaosat");
+const Thongbao = require("../models/Thongbao.cjs");
+const HistoriesSystem = require("../models/HistoriesSystem.cjs");
+const Phieukhaosat = require("../models/Phieukhaosat.cjs");
 
 const saveAction = async (user_id, action) => {
     let newAction = new HistoriesSystem({
