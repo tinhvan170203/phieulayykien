@@ -1,9 +1,9 @@
 const express = require('express');
 
 const router = express.Router();
-const checkRole = require('../middlewares/checkRole');
-const middlewareController = require('../middlewares/verifyToken');
-const khoi = require('../controllers/khoi');
+const checkRole = require('../middlewares/checkRole.cjs');
+const middlewareController = require('../middlewares/verifyToken.cjs');
+const khoi = require('../controllers/khoi.cjs');
 
 router.get('/fetch', khoi.getKhois);
 router.get('/fetch-user-cap2', khoi.getKhoisUserCap2);

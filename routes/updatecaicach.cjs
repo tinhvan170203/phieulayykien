@@ -19,9 +19,9 @@ var upload = multer({
 });
 
 const router = express.Router();
-const checkRole = require('../middlewares/checkRole');
-const middlewareController = require('../middlewares/verifyToken');
-const updatecaicach = require('../controllers/updatecaicach');
+const checkRole = require('../middlewares/checkRole.cjs');
+const middlewareController = require('../middlewares/verifyToken.cjs');
+const updatecaicach = require('../controllers/updatecaicach.cjs');
 
 router.get('/fetch',middlewareController.verifyToken, updatecaicach.getPhieuchams);
 router.post('/add',middlewareController.verifyToken, updatecaicach.savePhieudiemConfig);

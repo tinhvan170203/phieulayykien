@@ -2,9 +2,9 @@ const express = require('express');
 
 const router = express.Router();
 
-const auth = require('../controllers/auth');
-const middlewareController = require('../middlewares/verifyToken');
-const checkRole = require('../middlewares/checkRole');
+const auth = require('../controllers/auth.cjs');
+const middlewareController = require('../middlewares/verifyToken.cjs');
+const checkRole = require('../middlewares/checkRole.cjs');
 // const middlewareController = require('../middlewares/verifyToken');
 
 router.post('/login', auth.login )
